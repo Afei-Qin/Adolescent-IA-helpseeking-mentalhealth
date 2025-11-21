@@ -1,5 +1,5 @@
 ## ============================================================
-## 03_poisson_PR_CR2.R
+## poisson_PR_CR2.R
 ## Robust Poisson Regression with Cluster-Robust (CR2) SEs
 ##
 ## NOTE:
@@ -94,7 +94,7 @@ robust_mhp <- coef_test(model_pois_mhp,
                         cluster = data$schoolID)
 
 write.csv(robust_mhp,
-          "output/03_PR_CR2_mental_health_problems.csv",
+          "output/PR_CR2_mental_health_problems.csv",
           row.names = FALSE)
 
 
@@ -118,7 +118,7 @@ robust_dep <- coef_test(model_pois_dep,
                         cluster = data$schoolID)
 
 write.csv(robust_dep,
-          "output/03_PR_CR2_depression.csv",
+          "output/PR_CR2_depression.csv",
           row.names = FALSE)
 
 
@@ -137,7 +137,7 @@ robust_anx <- coef_test(model_pois_anx,
                         cluster = data$schoolID)
 
 write.csv(robust_anx,
-          "output/03_PR_CR2_anxiety.csv",
+          "output/PR_CR2_anxiety.csv",
           row.names = FALSE)
 
 ## ------------------------------------------------------------
