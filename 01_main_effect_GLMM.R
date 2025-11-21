@@ -7,7 +7,6 @@
 ## ============================================================
 ## 01_main_effect_GLMM.R
 ## Generalized Linear Mixed-Effects Models (GLMM)
-## Outcome: Mental Health Problems (binary)
 ## ============================================================
 
 library(lme4)
@@ -22,12 +21,12 @@ library(dplyr)
 data <- read.csv("data/minimal_dataset.csv")
 
 ## ------------------------------------------------------------
-## 2. Rename variables (mapping your original dataset)
+## 2. Rename variables
 ## ------------------------------------------------------------
 
 data <- data %>%
   rename(
-    mental_health_problems = mental_health_problems,   # binary outcome (0/1)
+    mental_health_problems = mental_health_problems,
     year        = Year,
     gender      = Gender,
     age         = Age,
@@ -56,7 +55,22 @@ factor_vars <- c(
 data[factor_vars] <- lapply(data[factor_vars], factor)
 
 ## ------------------------------------------------------------
-## 4. Fit GLMM (main effects + interaction)
+## 3b. Set reference levels (must match original analysis)
+## ------------------------------------------------------------
+
+data$IA_status <- relevel(data$IA_status, ref = "No Internet use")
+data$HS_status <- relevel(data$HS_status, ref = "No help-seeking")
+data$gender    <- relevel(data$gender, ref = "Boys")
+data$site      <- relevel(data$site, ref = "Urban")
+data$ethnicity <- relevel(data$ethnicity, ref = "Han")
+data$boarding  <- relevel(data$boarding, ref = "No")
+data$chronic_cond <- relevel(data$chronic_cond, ref = "0")
+data$covid     <- relevel(data$covid, ref = "No")
+data$glasses   <- relevel(data$glasses, ref = "No")
+data$BMI       <- relevel(data$BMI, ref = "Normal")
+
+## ------------------------------------------------------------
+## 4. Fit GLMM (main effects model)
 ## ------------------------------------------------------------
 
 model_glmm <- glmer(
@@ -87,7 +101,7 @@ OR_table <- tidy(model_glmm, effects = "fixed") %>%
 write.csv(OR_table, "output/01_OR_main_effects.csv", row.names = FALSE)
 
 ## ------------------------------------------------------------
-## 6. Marginal predicted probabilities (for plots)
+## 6. Marginal predicted probabilities
 ## ------------------------------------------------------------
 
 emm <- emmeans(model_glmm,
@@ -100,7 +114,6 @@ write.csv(plot_df, "output/01_predicted_probabilities.csv", row.names = FALSE)
 ## ------------------------------------------------------------
 ## End of Script
 ## ------------------------------------------------------------
-
 ## Multiple comparisons for IA_status and HS_status
 ## ============================================================
 ## 04_pairwise_GLMM.R
