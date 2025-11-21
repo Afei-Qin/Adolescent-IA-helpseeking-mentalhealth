@@ -114,10 +114,12 @@ write.csv(plot_df, "output/01_predicted_probabilities.csv", row.names = FALSE)
 ## ------------------------------------------------------------
 ## End of Script
 ## ------------------------------------------------------------
+
+
 ## Multiple comparisons for IA_status and HS_status
 ## ============================================================
-## 04_pairwise_GLMM.R
-## Pairwise comparisons for multi-level categorical predictors
+## pairwise_GLMM.R
+## Pairwise comparisons for IA_status and HS_status
 ## ============================================================
 
 library(lme4)
@@ -125,12 +127,15 @@ library(emmeans)
 library(dplyr)
 
 ## ------------------------------------------------------------
-## 1. Load model or dataset
+## 1. Load Dataset
 ## ------------------------------------------------------------
 
 data <- read.csv("data/minimal_dataset.csv")
 
-# Ensure same variable names as 01_main_effect_GLMM.R
+## ------------------------------------------------------------
+## 2. Rename variables
+## ------------------------------------------------------------
+
 data <- data %>%
   rename(
     mental_health_problems = mental_health_problems,
@@ -157,7 +162,22 @@ factor_vars <- c(
 data[factor_vars] <- lapply(data[factor_vars], factor)
 
 ## ------------------------------------------------------------
-## 2. Fit model (same structure as main model)
+## 3. Set reference levels (same as main model)
+## ------------------------------------------------------------
+
+data$IA_status <- relevel(data$IA_status, ref = "No Internet use")
+data$HS_status <- relevel(data$HS_status, ref = "No help-seeking")
+data$gender    <- relevel(data$gender, ref = "Boys")
+data$site      <- relevel(data$site, ref = "Urban")
+data$ethnicity <- relevel(data$ethnicity, ref = "Han")
+data$boarding  <- relevel(data$boarding, ref = "No")
+data$chronic_cond <- relevel(data$chronic_cond, ref = "0")
+data$covid     <- relevel(data$covid, ref = "No")
+data$glasses   <- relevel(data$glasses, ref = "No")
+data$BMI       <- relevel(data$BMI, ref = "Normal")
+
+## ------------------------------------------------------------
+## 4. Fit GLMM (same structure as main model)
 ## ------------------------------------------------------------
 
 model <- glmer(
@@ -173,38 +193,30 @@ model <- glmer(
 )
 
 ## ------------------------------------------------------------
-## 3. Pairwise contrast function
+## 5. Pairwise comparisons
 ## ------------------------------------------------------------
 
 run_pairwise <- function(model, var, adjust_method = "BH") {
-  
   emm <- emmeans(model, as.formula(paste("~", var)), type = "link")
-  
   contr <- contrast(emm, "pairwise", adjust = adjust_method)
-  
   df <- as.data.frame(summary(contr, infer = TRUE)) %>%
     mutate(
-      OR       = exp(estimate),
-      CI_low   = exp(estimate - 1.96 * SE),
-      CI_high  = exp(estimate + 1.96 * SE),
+      OR = exp(estimate),
+      CI_low  = exp(estimate - 1.96 * SE),
+      CI_high = exp(estimate + 1.96 * SE),
       variable = var
     )
-  
   return(df)
 }
 
-## ------------------------------------------------------------
-## 4. Run pairwise comparisons
-## ------------------------------------------------------------
-
 vars_to_compare <- c("IA_status", "HS_status")
 
-pairwise_results <- lapply(vars_to_compare, function(v) run_pairwise(model, v))
-pairwise_results <- bind_rows(pairwise_results)
+pairwise_results <- bind_rows(
+  lapply(vars_to_compare, function(v) run_pairwise(model, v))
+)
 
-write.csv(pairwise_results, "output/04_pairwise_comparisons.csv", row.names = FALSE)
+write.csv(pairwise_results, "output/pairwise_comparisons.csv", row.names = FALSE)
 
 ## ------------------------------------------------------------
 ## End of Script
 ## ------------------------------------------------------------
-
