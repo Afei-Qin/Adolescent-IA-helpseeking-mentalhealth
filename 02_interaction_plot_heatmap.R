@@ -1,5 +1,5 @@
 ## ============================================================
-## 02_interaction_GLMM.R
+## interaction_GLMM.R
 ## GLMM with Interaction: IA_status × HS_status
 ## (Internet addiction variable reversed so that
 ##   "Internet addiction" is the reference category)
@@ -101,7 +101,7 @@ interaction_OR <- tidy(model_interaction, effects = "fixed") %>%
   )
 
 write.csv(interaction_OR,
-          "output/02_interaction_OR_table.csv",
+          "output/interaction_OR_table.csv",
           row.names = FALSE)
 
 ## ------------------------------------------------------------
@@ -115,7 +115,7 @@ emm_interaction <- emmeans(model_interaction,
 plot_df <- as.data.frame(emm_interaction)
 
 write.csv(plot_df,
-          "output/02_predicted_probabilities_interaction.csv",
+          "output/predicted_probabilities_interaction.csv",
           row.names = FALSE)
 
 ## ------------------------------------------------------------
