@@ -1,5 +1,5 @@
 ## ============================================================
-## 04_pairwise_mixed_logit.R
+## pairwise_mixed_logit.R
 ## Pairwise GLMM comparisons for unordered 3-level outcome:
 ##     help-seeking (No help / Informal / Formal)
 ##
@@ -147,7 +147,7 @@ coef_all <- bind_rows(lapply(names(res_help$models), function(nm){
 
 }))
 
-write.csv(coef_all, "output/04_helpseeking_model_coefs.csv", row.names=FALSE)
+write.csv(coef_all, "output/helpseeking_model_coefs.csv", row.names=FALSE)
 
 ## End of script
 
