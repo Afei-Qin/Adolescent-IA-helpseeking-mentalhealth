@@ -1,3 +1,9 @@
+## NOTE:
+## This script analyses the primary binary outcome: mental_health_problems.
+## The same model structure was applied to two additional binary outcomes:
+##   - depression
+##   - anxiety
+## Only the dependent variable changes; all covariates and model settings remain identical.
 ## ============================================================
 ## 01_main_effect_GLMM.R
 ## Generalized Linear Mixed-Effects Models (GLMM)
@@ -55,7 +61,7 @@ data[factor_vars] <- lapply(data[factor_vars], factor)
 
 model_glmm <- glmer(
   mental_health_problems ~ 
-    IA_status * HS_status +
+    IA_status + HS_status +
     year + gender + age + site + ethnicity + grade + boarding +
     chronic_cond + covid + glasses + BMI +
     (1 | schoolID),
